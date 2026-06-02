@@ -2,1640 +2,647 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IOL Dashboard — Inversiones</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#080c14">
+<title>IOL Dashboard</title>
 <style>
-  :root {
-    --bg: #080c14;
-    --surface: #0f1724;
-    --surface2: #162033;
-    --border: #1e2d47;
-    --green: #00e676;
-    --green-dim: #00c853;
-    --red: #ff5252;
-    --yellow: #ffd740;
-    --blue: #448aff;
-    --text: #e8eaf0;
-    --text-dim: #7a8aaa;
-    --text-muted: #3d4f6b;
-    --accent: #0f3460;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* HEADER */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(10px);
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.3px;
-  }
-
-  .logo-dot {
-    width: 10px; height: 10px;
-    background: var(--green);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  #clock {
-    font-size: 13px;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .badge {
-    background: var(--green);
-    color: #000;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  /* TABS */
-  nav {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    padding: 0 24px;
-    gap: 4px;
-  }
-
-  .tab {
-    padding: 12px 18px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-dim);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-  }
-
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--green); border-bottom-color: var(--green); }
-
-  .tab-icon { font-size: 15px; }
-
-  /* MAIN */
-  main {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 24px;
-  }
-
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* CARDS GRID */
-  .cards-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    transition: border-color 0.2s;
-  }
-
-  .card:hover { border-color: #2a3d5e; }
-
-  .card-label {
-    font-size: 11px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-
-  .card-value {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-  }
-
-  .card-sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 4px;
-  }
-
-  .up { color: var(--green); }
-  .down { color: var(--red); }
-  .neutral { color: var(--text-dim); }
-
-  /* TABLE */
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .table-header {
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .table-title {
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th {
-    padding: 10px 16px;
-    text-align: left;
-    font-size: 11px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-    cursor: pointer;
-  }
-
-  th:hover { color: var(--text); }
-
-  td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    font-variant-numeric: tabular-nums;
-  }
-
-  tr:last-child td { border-bottom: none; }
-
-  tr:hover td { background: var(--surface2); }
-
-  .ticker-badge {
-    background: var(--accent);
-    color: var(--blue);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 7px;
-    border-radius: 5px;
-    letter-spacing: 0.3px;
-  }
-
-  /* BUTTONS */
-  .btn {
-    background: var(--green);
-    color: #000;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .btn:hover { opacity: 0.85; }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    padding: 7px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
-
-  .btn-red {
-    background: transparent;
-    color: var(--red);
-    border: 1px solid var(--red);
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    cursor: pointer;
-  }
-
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    width: 420px;
-    max-width: 95vw;
-  }
-
-  .modal h3 { font-size: 16px; margin-bottom: 20px; }
-
-  .form-group { margin-bottom: 14px; }
-
-  .form-group label {
-    display: block;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-
-  .form-group input, .form-group select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 9px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .form-group input:focus, .form-group select:focus {
-    border-color: var(--green);
-  }
-
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: flex-end;
-  }
-
-  /* NEWS */
-  .news-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-
-  @media (max-width: 768px) { .news-grid { grid-template-columns: 1fr; } }
-
-  .news-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.2s;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
-
-  .news-card:hover {
-    border-color: #2a3d5e;
-    transform: translateY(-1px);
-  }
-
-  .news-source {
-    font-size: 10px;
-    color: var(--green);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 8px;
-  }
-
-  .news-title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-
-  .news-desc {
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .news-time {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 10px;
-  }
-
-  /* RETRO */
-  .retro-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-
-  .retro-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .retro-date {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
-
-  .retro-badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .retro-badge.alcista { background: rgba(0,230,118,0.15); color: var(--green); }
-  .retro-badge.bajista { background: rgba(255,82,82,0.15); color: var(--red); }
-  .retro-badge.neutral { background: rgba(255,215,64,0.15); color: var(--yellow); }
-
-  .retro-section-title {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-    margin-top: 18px;
-  }
-
-  .retro-section-title:first-child { margin-top: 0; }
-
-  .retro-text {
-    font-size: 13px;
-    line-height: 1.7;
-    color: var(--text);
-  }
-
-  .retro-alert {
-    background: rgba(255,215,64,0.08);
-    border: 1px solid rgba(255,215,64,0.25);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 12px;
-    color: var(--yellow);
-    margin-bottom: 8px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-  }
-
-  .retro-opportunity {
-    background: rgba(0,230,118,0.06);
-    border: 1px solid rgba(0,230,118,0.2);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 12px;
-    color: var(--green);
-    margin-bottom: 8px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-  }
-
-  .sentiment-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 12px;
-  }
-
-  .sentiment-item {
-    flex: 1;
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 12px;
-    text-align: center;
-  }
-
-  .sentiment-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-  .sentiment-value { font-size: 20px; font-weight: 700; }
-
-  /* ALERTS */
-  .alert-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 10px;
-    transition: border-color 0.2s;
-  }
-
-  .alert-item:hover { border-color: #2a3d5e; }
-
-  .alert-ticker-badge {
-    background: var(--accent);
-    color: var(--blue);
-    font-size: 13px;
-    font-weight: 700;
-    padding: 6px 12px;
-    border-radius: 8px;
-    min-width: 70px;
-    text-align: center;
-  }
-
-  .alert-info { flex: 1; }
-  .alert-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-  .alert-cond { font-size: 12px; color: var(--text-dim); }
-
-  .alert-price { font-size: 16px; font-weight: 700; color: var(--yellow); }
-
-  .alert-triggered {
-    border-color: rgba(0,230,118,0.4);
-    background: rgba(0,230,118,0.04);
-  }
-
-  .alert-triggered .alert-price { color: var(--green); }
-
-  /* MARKET TICKERS */
-  .ticker-bar {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 14px 18px;
-    display: flex;
-    gap: 24px;
-    overflow-x: auto;
-    margin-bottom: 24px;
-    border: 1px solid var(--border);
-    scrollbar-width: none;
-  }
-
-  .ticker-bar::-webkit-scrollbar { display: none; }
-
-  .ticker-item { display: flex; flex-direction: column; gap: 3px; min-width: 90px; }
-  .ticker-name { font-size: 10px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
-  .ticker-val { font-size: 15px; font-weight: 700; }
-  .ticker-chg { font-size: 11px; font-weight: 600; }
-
-  /* CHART PLACEHOLDER */
-  .chart-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .chart-header {
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* SECTION ROW */
-  .section-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-
-  @media (max-width: 900px) { .section-row { grid-template-columns: 1fr; } }
-
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-dim);
-  }
-
-  .empty-icon { font-size: 32px; margin-bottom: 12px; }
-  .empty-text { font-size: 13px; }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  /* DONUT CHART */
-  .donut-wrap { position: relative; width: 140px; height: 140px; margin: 0 auto 16px; }
-  .donut-wrap svg { transform: rotate(-90deg); }
-  .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .donut-center-val { font-size: 18px; font-weight: 700; }
-  .donut-center-label { font-size: 10px; color: var(--text-dim); }
-
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 6px; }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    main { padding: 12px; }
-    .cards-row { grid-template-columns: 1fr 1fr; }
-    nav { overflow-x: auto; }
-  }
-
-  /* IOL CONNECT BANNER */
-  .connect-banner {
-    background: linear-gradient(135deg, #0f1f40, #0d2a1e);
-    border: 1px solid #1a4d35;
-    border-radius: 12px;
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-
-  .connect-banner-text h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-  .connect-banner-text p { font-size: 12px; color: var(--text-dim); }
-  .connect-banner-text a { color: var(--green); text-decoration: none; }
-  .connect-banner-text a:hover { text-decoration: underline; }
-
-  /* FILTER PILLS */
-  .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .pill {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    transition: all 0.2s;
-    background: transparent;
-  }
-  .pill.active { background: var(--green); color: #000; border-color: var(--green); }
-  .pill:hover:not(.active) { border-color: var(--text-dim); color: var(--text); }
-
-  /* Loading spinner */
-  .spinner {
-    width: 20px; height: 20px;
-    border: 2px solid var(--border);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    display: inline-block;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Tooltip */
-  [data-tooltip] { position: relative; cursor: help; }
-  [data-tooltip]::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a2540;
-    color: var(--text);
-    font-size: 11px;
-    padding: 5px 10px;
-    border-radius: 6px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-    border: 1px solid var(--border);
-    z-index: 10;
-  }
-  [data-tooltip]:hover::after { opacity: 1; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080c14;--s1:#0f1724;--s2:#162033;--border:#1e2d47;
+  --green:#00e676;--red:#ff5252;--yellow:#ffd740;--blue:#448aff;
+  --text:#e8eaf0;--dim:#7a8aaa;--muted:#3d4f6b;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{background:var(--s1);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px}
+.dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-right{font-size:11px;color:var(--dim);text-align:right;line-height:1.4}
+
+/* SCROLL AREA */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+::-webkit-scrollbar{display:none}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.btab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;font-size:10px;color:var(--dim);cursor:pointer;transition:color .2s;gap:3px;border:none;background:transparent;font-family:inherit}
+.btab.active{color:var(--green)}
+.btab-icon{font-size:20px}
+.badge-dot{position:absolute;top:6px;right:calc(50% - 14px);width:7px;height:7px;background:var(--red);border-radius:50%;display:none}
+
+/* PAGE */
+.page{display:none;padding:16px}
+.page.active{display:block}
+
+/* SECTION TITLE */
+.stitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin-bottom:10px;margin-top:18px}
+.stitle:first-child{margin-top:0}
+
+/* SUMMARY CARDS — horizontal scroll */
+.cards-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none}
+.cards-row::-webkit-scrollbar{display:none}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;min-width:140px;flex-shrink:0}
+.card-label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;font-weight:600}
+.card-val{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.card-sub{font-size:11px;color:var(--dim);margin-top:3px}
+.up{color:var(--green)}.down{color:var(--red)}.neu{color:var(--dim)}
+
+/* POSITION CARDS */
+.pos-list{display:flex;flex-direction:column;gap:8px}
+.pos-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.pos-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pos-ticker{background:#0f3460;color:var(--blue);font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:.3px}
+.pos-tipo{font-size:10px;color:var(--muted);background:var(--s2);padding:3px 7px;border-radius:5px}
+.pos-name{font-size:12px;color:var(--dim);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pos-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.pos-num{background:var(--s2);border-radius:8px;padding:8px;text-align:center}
+.pos-num-label{font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;letter-spacing:.4px}
+.pos-num-val{font-size:13px;font-weight:600}
+.pos-dia-bar{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.pos-valuacion{font-size:12px;color:var(--dim)}
+.pos-dia{font-size:14px;font-weight:700}
+.pos-del{position:absolute;top:12px;right:12px;font-size:18px;color:var(--muted);cursor:pointer;padding:4px}
+
+/* FAB */
+.fab{position:fixed;bottom:72px;right:16px;width:52px;height:52px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(0,230,118,.3);border:none;z-index:99;transition:transform .2s}
+.fab:active{transform:scale(.9)}
+
+/* NEWS CARDS */
+.news-list{display:flex;flex-direction:column;gap:10px}
+.news-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-decoration:none;color:inherit;display:block;active:opacity:.8}
+.news-src{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.news-title{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:6px}
+.news-desc{font-size:12px;color:var(--dim);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-time{font-size:11px;color:var(--muted);margin-top:8px}
+
+/* FILTER PILLS */
+.pills{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;border:1px solid var(--border);color:var(--dim);background:transparent;white-space:nowrap;flex-shrink:0}
+.pill.active{background:var(--green);color:#000;border-color:var(--green)}
+
+/* MARKET TICKERS */
+.tickers{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none}
+.tickers::-webkit-scrollbar{display:none}
+.ticker{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:10px 12px;min-width:90px;flex-shrink:0;text-align:center}
+.ticker-name{font-size:9px;color:var(--dim);font-weight:700;text-transform:uppercase;margin-bottom:4px}
+.ticker-val{font-size:14px;font-weight:700;margin-bottom:2px}
+.ticker-chg{font-size:11px;font-weight:600}
+
+/* RETRO */
+.retro-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.retro-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px}
+.retro-date-txt{font-size:13px;font-weight:700;margin-bottom:2px}
+.retro-gen{font-size:11px;color:var(--dim)}
+.retro-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+.retro-badge.alcista{background:rgba(0,230,118,.15);color:var(--green)}
+.retro-badge.bajista{background:rgba(255,82,82,.15);color:var(--red)}
+.retro-badge.neutral{background:rgba(255,215,64,.15);color:var(--yellow)}
+.retro-stitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);margin:12px 0 6px}
+.retro-text{font-size:13px;line-height:1.7;color:var(--text)}
+.retro-alert{background:rgba(255,215,64,.08);border:1px solid rgba(255,215,64,.2);border-radius:8px;padding:10px;font-size:12px;color:var(--yellow);margin-bottom:6px;display:flex;gap:6px}
+.retro-opp{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15);border-radius:8px;padding:10px;font-size:12px;color:var(--green);margin-bottom:6px;display:flex;gap:6px}
+
+/* ALERTS */
+.alert-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.alert-card.triggered{border-color:rgba(0,230,118,.4);background:rgba(0,230,118,.04)}
+.alert-badge{background:#0f3460;color:var(--blue);font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;min-width:64px;text-align:center}
+.alert-info{flex:1}
+.alert-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.alert-cond{font-size:11px;color:var(--dim)}
+.alert-price-txt{font-size:16px;font-weight:700;color:var(--yellow)}
+.alert-card.triggered .alert-price-txt{color:var(--green)}
+
+/* FORM */
+.form-group{margin-bottom:12px}
+.form-label{font-size:12px;color:var(--dim);margin-bottom:5px;display:block;font-weight:500}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;outline:none;-webkit-appearance:none}
+.form-input:focus{border-color:var(--green)}
+.form-select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;outline:none;-webkit-appearance:none}
+.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;outline:none;resize:none;font-family:inherit}
+
+/* BTNS */
+.btn{background:var(--green);color:#000;border:none;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:4px}
+.btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border);padding:11px 20px;border-radius:10px;font-size:14px;cursor:pointer;width:100%;margin-top:4px}
+.btn-sm{background:transparent;color:var(--red);border:1px solid var(--red);padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer}
+
+/* MODAL SHEET */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--s1);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:85vh;overflow-y:auto}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.sheet-title{font-size:16px;font-weight:700;margin-bottom:16px}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--dim)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-text{font-size:13px;line-height:1.5}
+
+/* BANNER */
+.banner{background:linear-gradient(135deg,#0f1f40,#0d2a1e);border:1px solid #1a4d35;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.banner h3{font-size:13px;font-weight:700;margin-bottom:3px}
+.banner p{font-size:11px;color:var(--dim);line-height:1.4}
+.banner a{color:var(--green);text-decoration:none}
+
+/* ÚLTIMA ACT */
+.last-update{text-align:center;font-size:11px;color:var(--muted);padding:8px 0 4px}
+
+/* SUMMARY BAR */
+.summary-bar{background:var(--s1);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;gap:16px;overflow-x:auto;flex-shrink:0}
+.sum-item{flex-shrink:0;text-align:center}
+.sum-label{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.sum-val{font-size:13px;font-weight:700}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-dot"></div>
-    IOL Dashboard
-  </div>
-  <div class="header-right">
-    <span id="clock"></span>
-    <span class="badge">En vivo</span>
-  </div>
-</header>
-
-<!-- TABS -->
-<nav>
-  <div class="tab active" onclick="showTab('portfolio')" data-tab="portfolio">
-    <span class="tab-icon">💼</span> Portfolio
-  </div>
-  <div class="tab" onclick="showTab('noticias')" data-tab="noticias">
-    <span class="tab-icon">📰</span> Noticias
-  </div>
-  <div class="tab" onclick="showTab('retrospectiva')" data-tab="retrospectiva">
-    <span class="tab-icon">🤖</span> Retrospectiva IA
-  </div>
-  <div class="tab" onclick="showTab('alertas')" data-tab="alertas">
-    <span class="tab-icon">🔔</span> Alertas
-    <span id="alert-count" style="background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;display:none;">0</span>
-  </div>
-</nav>
-
-<!-- MAIN -->
-<main>
-
-  <!-- ====== PORTFOLIO PAGE ====== -->
-  <div id="page-portfolio" class="page active">
-
-    <div class="connect-banner">
-      <div class="connect-banner-text">
-        <h3>🔗 Conectá IOL a Claude para datos en tiempo real</h3>
-        <p>Podés conectar tu cuenta IOL directamente: andá a <a href="https://mcp.invertironline.com/" target="_blank">mcp.invertironline.com</a> y seguí los 6 pasos. Una vez conectado, preguntale a Claude: <em>"¿Cuáles son mis tenencias actuales?"</em></p>
-      </div>
-      <button class="btn" onclick="window.open('https://mcp.invertironline.com/','_blank')">Conectar IOL</button>
-    </div>
-
-    <!-- SUMMARY CARDS -->
-    <div class="cards-row" id="summary-cards">
-      <div class="card">
-        <div class="card-label">Valuación Total</div>
-        <div class="card-value" id="total-value">$0.00</div>
-        <div class="card-sub" id="total-usd">USD $0.00</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Resultado del Día</div>
-        <div class="card-value up" id="day-result">+$0.00</div>
-        <div class="card-sub" id="day-pct">+0.00%</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Ganancia Total</div>
-        <div class="card-value up" id="total-gain">+$0.00</div>
-        <div class="card-sub" id="total-gain-pct">+0.00%</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Posiciones</div>
-        <div class="card-value" id="pos-count">0</div>
-        <div class="card-sub" id="pos-sub">activos distintos</div>
-      </div>
-    </div>
-
-    <!-- PORTFOLIO TABLE -->
-    <div class="section-row">
-      <div style="grid-column: span 2;">
-        <div class="table-wrap">
-          <div class="table-header">
-            <div class="table-title">Mis Posiciones</div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn" onclick="syncFromIOL()">↻ Sincronizar IOL</button>
-              <button class="btn-ghost" onclick="openModal('add-position-modal')">+ Agregar</button>
-              <button class="btn-ghost" onclick="clearPortfolio()">Limpiar</button>
-            </div>
-          </div>
-          <div id="portfolio-empty" class="empty-state" style="display:none;">
-            <div class="empty-icon">📊</div>
-            <div class="empty-text">No hay posiciones cargadas.<br>Hacé click en "Agregar" para comenzar.</div>
-          </div>
-          <table id="portfolio-table">
-            <thead>
-              <tr>
-                <th onclick="sortTable('ticker')">Ticker ↕</th>
-                <th>Nombre</th>
-                <th onclick="sortTable('tipo')">Tipo ↕</th>
-                <th onclick="sortTable('cantidad')">Cantidad ↕</th>
-                <th onclick="sortTable('precio_compra')">P. Compra ↕</th>
-                <th onclick="sortTable('precio_actual')">P. Actual ↕</th>
-                <th>Hoy %</th>
-                <th onclick="sortTable('variacion')">P&L % ↕</th>
-                <th onclick="sortTable('ganancia')">Ganancia ↕</th>
-                <th onclick="sortTable('valuacion')">Valuación ↕</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="portfolio-tbody">
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ALLOCATION SECTION -->
-    <div class="section-row">
-      <div class="card" id="allocation-card">
-        <div class="card-label" style="margin-bottom:16px;">Distribución del Portfolio</div>
-        <div class="donut-wrap">
-          <svg viewBox="0 0 140 140" width="140" height="140">
-            <circle cx="70" cy="70" r="54" fill="none" stroke="var(--surface2)" stroke-width="16"/>
-            <circle id="donut-circle" cx="70" cy="70" r="54" fill="none" stroke="var(--green)" stroke-width="16" stroke-dasharray="0 339.29"/>
-          </svg>
-          <div class="donut-center">
-            <div class="donut-center-val" id="donut-pct">0%</div>
-            <div class="donut-center-label">Renta Var.</div>
-          </div>
-        </div>
-        <div id="legend-container"></div>
-      </div>
-      <div class="card" id="top-movers-card">
-        <div class="card-label" style="margin-bottom:14px;">Top Movers</div>
-        <div id="top-movers-list">
-          <div class="empty-state" style="padding:20px 0;">
-            <div class="empty-icon">📈</div>
-            <div class="empty-text" style="font-size:12px;">Cargá posiciones para ver top movers</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ====== NOTICIAS PAGE ====== -->
-  <div id="page-noticias" class="page">
-
-    <div class="ticker-bar" id="market-tickers">
-      <div class="ticker-item">
-        <span class="ticker-name">S&amp;P 500</span>
-        <span class="ticker-val" id="spx-val">—</span>
-        <span class="ticker-chg" id="spx-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">Nasdaq</span>
-        <span class="ticker-val" id="ndx-val">—</span>
-        <span class="ticker-chg" id="ndx-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">Merval</span>
-        <span class="ticker-val" id="merval-val">—</span>
-        <span class="ticker-chg" id="merval-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">Dólar CCL</span>
-        <span class="ticker-val" id="ccl-val">—</span>
-        <span class="ticker-chg" id="ccl-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">Dólar Blue</span>
-        <span class="ticker-val" id="blue-val">—</span>
-        <span class="ticker-chg" id="blue-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">Oro</span>
-        <span class="ticker-val" id="gold-val">—</span>
-        <span class="ticker-chg" id="gold-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">Bitcoin</span>
-        <span class="ticker-val" id="btc-val">—</span>
-        <span class="ticker-chg" id="btc-chg">cargando…</span>
-      </div>
-      <div class="ticker-item">
-        <span class="ticker-name">WTI</span>
-        <span class="ticker-val" id="wti-val">—</span>
-        <span class="ticker-chg" id="wti-chg">cargando…</span>
-      </div>
-    </div>
-
-    <div class="filter-pills">
-      <button class="pill active" onclick="filterNews('all',this)">Todas</button>
-      <button class="pill" onclick="filterNews('argentina',this)">Argentina</button>
-      <button class="pill" onclick="filterNews('global',this)">Global</button>
-      <button class="pill" onclick="filterNews('acciones',this)">Acciones</button>
-      <button class="pill" onclick="filterNews('macro',this)">Macro</button>
-      <button class="pill" onclick="filterNews('crypto',this)">Crypto</button>
-    </div>
-
-    <div class="news-grid" id="news-grid">
-      <!-- populated by JS -->
-    </div>
-
-    <div style="text-align:center;margin-top:8px;">
-      <button class="btn-ghost" onclick="loadMoreNews()">Ver más noticias</button>
-    </div>
-
-    <!-- TradingView Widget -->
-    <div class="chart-wrap" style="margin-top:24px;">
-      <div class="chart-header">
-        <div class="table-title">Noticias de Mercado — TradingView</div>
-      </div>
-      <div class="tradingview-widget-container" style="padding:0;">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-        {
-          "feedMode": "market",
-          "market": "stock",
-          "isTransparent": true,
-          "displayMode": "regular",
-          "width": "100%",
-          "height": 450,
-          "colorTheme": "dark",
-          "locale": "es"
-        }
-        </script>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ====== RETROSPECTIVA PAGE ====== -->
-  <div id="page-retrospectiva" class="page">
-
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <h2 style="font-size:18px;font-weight:700;">Análisis de Mercado IA</h2>
-        <p style="font-size:12px;color:var(--text-dim);margin-top:4px;">Retrospectivas generadas por Claude. Abrí Claude y pedile: <em>"Hacé una retrospectiva del mercado de hoy"</em></p>
-      </div>
-      <button class="btn" onclick="newRetro()">+ Nueva retrospectiva</button>
-    </div>
-
-    <div id="retro-list">
-
-      <!-- SAMPLE RETRO CARD -->
-      <div class="retro-card" id="retro-sample">
-        <div class="retro-header">
-          <div style="flex:1;">
-            <div style="font-size:15px;font-weight:700;margin-bottom:3px;">Retrospectiva — Lunes 1 de Junio 2026</div>
-            <div class="retro-date">Generado por Claude · <span id="retro-time-sample"></span></div>
-          </div>
-          <span class="retro-badge neutral">Neutral-Alcista</span>
-        </div>
-
-        <div class="retro-section-title">📋 Resumen Ejecutivo</div>
-        <p class="retro-text">
-          El mercado abrió la semana con sesgo positivo, impulsado por mejoras en el frente comercial global y datos de actividad manufacturera por encima de expectativas en Estados Unidos. El Merval consolidó ganancias recientes con volumen moderado, mientras el dólar CCL se mantuvo estable en la zona de $1.280-$1.295. Las acciones de energía lideraron las subas en Argentina, reflejo del rally internacional del crudo (+1.8% en la semana).
-        </p>
-
-        <div class="retro-section-title">🚨 Alertas Importantes</div>
-        <div class="retro-alert">⚠️ <span>Reunión de la Fed programada para el miércoles. Mercado descuenta pausa en tasas pero el tono del comunicado será clave para activos de riesgo emergentes.</span></div>
-        <div class="retro-alert">⚠️ <span>Inflación de EE.UU. (PCE) se publica el viernes. Dato caliente podría generar sell-off en bonos y presionar al Merval vía CEDEARs.</span></div>
-
-        <div class="retro-section-title">🌡️ Sentimiento de Mercado</div>
-        <div class="sentiment-row">
-          <div class="sentiment-item">
-            <div class="sentiment-label">Global</div>
-            <div class="sentiment-value" style="color:var(--green);">📈 Alcista</div>
-          </div>
-          <div class="sentiment-item">
-            <div class="sentiment-label">Argentina</div>
-            <div class="sentiment-value" style="color:var(--yellow);">⚖️ Neutral</div>
-          </div>
-          <div class="sentiment-item">
-            <div class="sentiment-label">Riesgo País</div>
-            <div class="sentiment-value" style="color:var(--green);">↓ 1.420 pb</div>
-          </div>
-        </div>
-
-        <div class="retro-section-title">💡 Oportunidades Detectadas</div>
-        <div class="retro-opportunity">💚 <span><strong>YPF (YPFD):</strong> Sigue en zona de soporte técnico tras corrección del 8% en 3 semanas. Con el petróleo en recuperación, riesgo/retorno favorable para posición táctica.</span></div>
-        <div class="retro-opportunity">💚 <span><strong>Bonos AL30D:</strong> Spread comprimiendo con riesgo país a la baja. Rendimiento todavía atractivo para inversores con horizonte 6-12 meses.</span></div>
-
-        <div class="retro-section-title">⚠️ Riesgos Principales</div>
-        <p class="retro-text">
-          El mayor riesgo de corto plazo es una sorpresa negativa en el dato de inflación americano que revierta la compresión de spreads de emergentes. Localmente, la incertidumbre por las elecciones de octubre mantiene volatilidad latente. Adicionalmente, la baja liquidez en el Merval amplifica movimientos y reduce la confiabilidad de señales técnicas.
-        </p>
-
-        <div class="retro-section-title">✅ Acciones Recomendadas</div>
-        <p class="retro-text">
-          1. Mantener posición defensiva en cartera hasta conocer el comunicado de la Fed el miércoles.<br>
-          2. Aprovechar correcciones en CEDEARs de energía si el crudo retrocede para promediar entrada.<br>
-          3. Revisar stop-loss en acciones volátiles dada la menor liquidez estacional de junio.<br>
-          4. Considerar dolarizar parcialmente via AL30D con la compresión actual del riesgo país.
-        </p>
-      </div>
-
-    </div>
-
-    <!-- Nueva retrospectiva form -->
-    <div class="retro-card" id="new-retro-form" style="display:none;">
-      <div class="retro-header">
-        <div style="font-size:15px;font-weight:700;">Nueva Retrospectiva</div>
-      </div>
-      <div class="form-group">
-        <label>Fecha</label>
-        <input type="date" id="retro-date-input">
-      </div>
-      <div class="form-group">
-        <label>Sentimiento de Mercado</label>
-        <select id="retro-sentiment">
-          <option value="alcista">Alcista</option>
-          <option value="neutral" selected>Neutral</option>
-          <option value="bajista">Bajista</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Resumen Ejecutivo</label>
-        <textarea id="retro-summary" rows="4" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-size:13px;resize:vertical;outline:none;font-family:inherit;"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Alertas (una por línea)</label>
-        <textarea id="retro-alerts" rows="3" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-size:13px;resize:vertical;outline:none;font-family:inherit;"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Oportunidades (una por línea)</label>
-        <textarea id="retro-ops" rows="3" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-size:13px;resize:vertical;outline:none;font-family:inherit;"></textarea>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-ghost" onclick="document.getElementById('new-retro-form').style.display='none'">Cancelar</button>
-        <button class="btn" onclick="saveRetro()">Guardar Retrospectiva</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ====== ALERTAS PAGE ====== -->
-  <div id="page-alertas" class="page">
-
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <h2 style="font-size:18px;font-weight:700;">Alertas de Precio</h2>
-        <p style="font-size:12px;color:var(--text-dim);margin-top:4px;">Configurá alertas y revisalas manualmente actualizando los precios.</p>
-      </div>
-      <button class="btn" onclick="openModal('add-alert-modal')">+ Nueva Alerta</button>
-    </div>
-
-    <div id="alerts-empty" class="empty-state" style="display:none;padding:60px 20px;">
-      <div class="empty-icon">🔔</div>
-      <div class="empty-text">No hay alertas configuradas.<br>Hacé click en "Nueva Alerta" para crear una.</div>
-    </div>
-
-    <div id="alerts-list"></div>
-
-    <div class="card" style="margin-top:24px;">
-      <div class="card-label" style="margin-bottom:12px;">📊 Actualizar Precios Actuales</div>
-      <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">Para disparar alertas, ingresá el precio actual de cada activo y hacé click en "Verificar".</p>
-      <div id="price-update-list"></div>
-      <button class="btn" style="margin-top:14px;" onclick="checkAllAlerts()">Verificar Alertas</button>
-    </div>
-
-  </div>
-
-</main>
-
-<!-- MODALS -->
-<div class="modal-overlay" id="add-position-modal">
-  <div class="modal">
-    <h3>➕ Agregar Posición</h3>
-    <div class="form-group">
-      <label>Ticker</label>
-      <input type="text" id="pos-ticker" placeholder="Ej: GGAL, YPFD, AL30D" style="text-transform:uppercase;">
-    </div>
-    <div class="form-group">
-      <label>Nombre del activo</label>
-      <input type="text" id="pos-name" placeholder="Ej: Grupo Galicia">
-    </div>
-    <div class="form-group">
-      <label>Tipo</label>
-      <select id="pos-tipo">
-        <option value="Acción">Acción</option>
-        <option value="CEDEAR">CEDEAR</option>
-        <option value="Bono">Bono</option>
-        <option value="FCI">FCI</option>
-        <option value="Opción">Opción</option>
-        <option value="Otro">Otro</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Cantidad</label>
-      <input type="number" id="pos-cantidad" placeholder="100" min="0" step="1">
-    </div>
-    <div class="form-group">
-      <label>Precio de Compra (ARS)</label>
-      <input type="number" id="pos-precio-compra" placeholder="1250.50" min="0" step="0.01">
-    </div>
-    <div class="form-group">
-      <label>Precio Actual (ARS)</label>
-      <input type="number" id="pos-precio-actual" placeholder="1380.00" min="0" step="0.01">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal('add-position-modal')">Cancelar</button>
-      <button class="btn" onclick="addPosition()">Agregar</button>
-    </div>
+<div class="hdr">
+  <div class="logo"><div class="dot"></div>IOL Dashboard</div>
+  <div class="hdr-right" id="clock-area">
+    <div id="clock-time" style="font-weight:600;font-size:12px;color:var(--text)"></div>
+    <div id="clock-date"></div>
   </div>
 </div>
 
-<div class="modal-overlay" id="add-alert-modal">
-  <div class="modal">
-    <h3>🔔 Nueva Alerta de Precio</h3>
-    <div class="form-group">
-      <label>Ticker</label>
-      <input type="text" id="alert-ticker" placeholder="Ej: GGAL" style="text-transform:uppercase;">
+<!-- SUMMARY BAR -->
+<div class="summary-bar">
+  <div class="sum-item"><div class="sum-label">Total ARS</div><div class="sum-val" id="sb-total">$0</div></div>
+  <div class="sum-item"><div class="sum-label">Hoy</div><div class="sum-val up" id="sb-hoy">+0%</div></div>
+  <div class="sum-item"><div class="sum-label">Posiciones</div><div class="sum-val" id="sb-pos">0</div></div>
+  <div class="sum-item"><div class="sum-label">Actualizado</div><div class="sum-val" id="sb-upd" style="font-size:11px;color:var(--dim)">—</div></div>
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll" id="scroll-area">
+
+  <!-- ===== PORTFOLIO ===== -->
+  <div class="page active" id="page-portfolio">
+    <div style="padding:16px">
+
+      <div class="banner">
+        <h3>🔗 Datos en tiempo real via IOL MCP</h3>
+        <p>Pedile a Claude: <em>"Actualizá los precios de mi cartera"</em> y el dashboard se sincroniza automáticamente. O visitá <a href="https://mcp.invertironline.com" target="_blank">mcp.invertironline.com</a> para conectar.</p>
+      </div>
+
+      <div class="stitle">Resumen</div>
+      <div class="cards-row">
+        <div class="card"><div class="card-label">Valuación Total</div><div class="card-val" id="c-total">$0</div><div class="card-sub" id="c-usd">USD $0</div></div>
+        <div class="card"><div class="card-label">Resultado Hoy</div><div class="card-val up" id="c-hoy">—</div><div class="card-sub" id="c-hoy-s">—</div></div>
+        <div class="card"><div class="card-label">Top Gainer</div><div class="card-val up" id="c-gain">—</div><div class="card-sub" id="c-gain-s">—</div></div>
+        <div class="card"><div class="card-label">Top Loser</div><div class="card-val down" id="c-loss">—</div><div class="card-sub" id="c-loss-s">—</div></div>
+      </div>
+
+      <div class="stitle">Mis Posiciones</div>
+      <div class="pos-list" id="pos-list">
+        <div class="empty" id="pos-empty" style="display:none">
+          <div class="empty-icon">📊</div>
+          <div class="empty-text">Sin posiciones.<br>Tocá + para agregar.</div>
+        </div>
+      </div>
+
+      <div class="last-update">Última actualización: <span id="last-upd-txt">—</span></div>
     </div>
-    <div class="form-group">
-      <label>Nombre del activo</label>
-      <input type="text" id="alert-name" placeholder="Ej: Grupo Galicia">
+  </div>
+
+  <!-- ===== NOTICIAS ===== -->
+  <div class="page" id="page-noticias">
+    <div style="padding:16px">
+
+      <div class="tickers" id="market-tickers">
+        <div class="ticker"><div class="ticker-name">S&amp;P 500</div><div class="ticker-val" id="t-spx">—</div><div class="ticker-chg" id="tc-spx">…</div></div>
+        <div class="ticker"><div class="ticker-name">Nasdaq</div><div class="ticker-val" id="t-ndx">—</div><div class="ticker-chg" id="tc-ndx">…</div></div>
+        <div class="ticker"><div class="ticker-name">Merval</div><div class="ticker-val" id="t-merval">—</div><div class="ticker-chg" id="tc-merval">…</div></div>
+        <div class="ticker"><div class="ticker-name">CCL</div><div class="ticker-val" id="t-ccl">—</div><div class="ticker-chg" id="tc-ccl">…</div></div>
+        <div class="ticker"><div class="ticker-name">Blue</div><div class="ticker-val" id="t-blue">—</div><div class="ticker-chg" id="tc-blue">…</div></div>
+        <div class="ticker"><div class="ticker-name">Oro</div><div class="ticker-val" id="t-gold">—</div><div class="ticker-chg" id="tc-gold">…</div></div>
+        <div class="ticker"><div class="ticker-name">BTC</div><div class="ticker-val" id="t-btc">—</div><div class="ticker-chg" id="tc-btc">…</div></div>
+      </div>
+
+      <div class="pills" id="news-pills">
+        <button class="pill active" onclick="filterNews('all',this)">Todas</button>
+        <button class="pill" onclick="filterNews('argentina',this)">Argentina</button>
+        <button class="pill" onclick="filterNews('global',this)">Global</button>
+        <button class="pill" onclick="filterNews('acciones',this)">Acciones</button>
+        <button class="pill" onclick="filterNews('macro',this)">Macro</button>
+        <button class="pill" onclick="filterNews('crypto',this)">Crypto</button>
+      </div>
+
+      <div class="news-list" id="news-list"></div>
     </div>
-    <div class="form-group">
-      <label>Condición</label>
-      <select id="alert-cond">
-        <option value="above">Sube sobre</option>
-        <option value="below">Baja de</option>
-      </select>
+  </div>
+
+  <!-- ===== RETROSPECTIVA ===== -->
+  <div class="page" id="page-retro">
+    <div style="padding:16px">
+      <div class="stitle">Análisis IA</div>
+      <p style="font-size:12px;color:var(--dim);margin-bottom:14px;">Pedile a Claude: <em>"Hacé una retrospectiva del mercado de hoy"</em> y pegá el resultado acá.</p>
+      <div id="retro-list"></div>
+      <button class="btn" style="margin-bottom:12px;" onclick="openSheet('retro-sheet')">+ Nueva Retrospectiva</button>
     </div>
-    <div class="form-group">
-      <label>Precio objetivo (ARS)</label>
-      <input type="number" id="alert-price" placeholder="1500.00" min="0" step="0.01">
+  </div>
+
+  <!-- ===== ALERTAS ===== -->
+  <div class="page" id="page-alertas">
+    <div style="padding:16px">
+      <div class="stitle">Alertas de Precio</div>
+      <div id="alerts-empty" class="empty" style="display:none;padding:40px 0">
+        <div class="empty-icon">🔔</div>
+        <div class="empty-text">Sin alertas.<br>Tocá + para crear.</div>
+      </div>
+      <div id="alerts-list"></div>
+
+      <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:16px">
+        <div class="stitle" style="margin-top:0">Verificar precios</div>
+        <div id="price-check-list"></div>
+        <button class="btn" style="margin-top:10px" onclick="checkAlerts()">Verificar alertas</button>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Notas (opcional)</label>
-      <input type="text" id="alert-notes" placeholder="Ej: Tomar ganancia 20%">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal('add-alert-modal')">Cancelar</button>
-      <button class="btn" onclick="addAlert()">Crear Alerta</button>
-    </div>
+  </div>
+
+</div><!-- end scroll -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="onFab()">+</button>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="btab active" onclick="showTab('portfolio')" id="btab-portfolio">
+    <span class="btab-icon">💼</span>Portfolio
+  </button>
+  <button class="btab" onclick="showTab('noticias')" id="btab-noticias">
+    <span class="btab-icon">📰</span>Noticias
+  </button>
+  <button class="btab" onclick="showTab('retro')" id="btab-retro">
+    <span class="btab-icon">🤖</span>Análisis IA
+  </button>
+  <button class="btab" onclick="showTab('alertas')" id="btab-alertas">
+    <div style="position:relative;display:inline-block">
+      <span class="btab-icon">🔔</span>
+      <span id="alert-dot" class="badge-dot"></span>
+    </div>Alertas
+  </button>
+</div>
+
+<!-- SHEETS -->
+<div class="sheet-overlay" id="pos-sheet" onclick="if(event.target===this)closeSheet('pos-sheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">➕ Agregar Posición</div>
+    <div class="form-group"><label class="form-label">Ticker</label><input class="form-input" id="ps-ticker" placeholder="Ej: GGAL, NVDA" style="text-transform:uppercase"></div>
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="ps-name" placeholder="Ej: CEDEAR Nvidia"></div>
+    <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="ps-tipo"><option>Acción</option><option>CEDEAR</option><option>Bono</option><option>FCI</option><option>Otro</option></select></div>
+    <div class="form-group"><label class="form-label">Cantidad</label><input class="form-input" id="ps-cant" type="number" placeholder="100"></div>
+    <div class="form-group"><label class="form-label">Precio de Compra (ARS)</label><input class="form-input" id="ps-compra" type="number" placeholder="13960"></div>
+    <div class="form-group"><label class="form-label">Precio Actual (ARS)</label><input class="form-input" id="ps-actual" type="number" placeholder="13960"></div>
+    <div class="form-group"><label class="form-label">Var. del Día %</label><input class="form-input" id="ps-vardia" type="number" placeholder="5.35" step="0.01"></div>
+    <button class="btn" onclick="addPosition()">Agregar</button>
+    <button class="btn-ghost" onclick="closeSheet('pos-sheet')">Cancelar</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="alert-sheet" onclick="if(event.target===this)closeSheet('alert-sheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🔔 Nueva Alerta</div>
+    <div class="form-group"><label class="form-label">Ticker</label><input class="form-input" id="as-ticker" placeholder="Ej: GGAL" style="text-transform:uppercase"></div>
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="as-name" placeholder="Ej: Grupo Galicia"></div>
+    <div class="form-group"><label class="form-label">Condición</label><select class="form-select" id="as-cond"><option value="above">Sube sobre</option><option value="below">Baja de</option></select></div>
+    <div class="form-group"><label class="form-label">Precio objetivo (ARS)</label><input class="form-input" id="as-price" type="number" placeholder="15000"></div>
+    <div class="form-group"><label class="form-label">Notas (opcional)</label><input class="form-input" id="as-notes" placeholder="Ej: Tomar ganancia"></div>
+    <button class="btn" onclick="addAlert()">Crear Alerta</button>
+    <button class="btn-ghost" onclick="closeSheet('alert-sheet')">Cancelar</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="retro-sheet" onclick="if(event.target===this)closeSheet('retro-sheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🤖 Nueva Retrospectiva</div>
+    <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="rs-date" type="date"></div>
+    <div class="form-group"><label class="form-label">Sentimiento</label><select class="form-select" id="rs-sent"><option value="alcista">📈 Alcista</option><option value="neutral" selected>⚖️ Neutral</option><option value="bajista">📉 Bajista</option></select></div>
+    <div class="form-group"><label class="form-label">Resumen ejecutivo</label><textarea class="form-textarea" id="rs-summary" rows="4" placeholder="Pegá o escribí el análisis del día..."></textarea></div>
+    <div class="form-group"><label class="form-label">Alertas (una por línea)</label><textarea class="form-textarea" id="rs-alerts" rows="3"></textarea></div>
+    <div class="form-group"><label class="form-label">Oportunidades (una por línea)</label><textarea class="form-textarea" id="rs-ops" rows="3"></textarea></div>
+    <button class="btn" onclick="saveRetro()">Guardar</button>
+    <button class="btn-ghost" onclick="closeSheet('retro-sheet')">Cancelar</button>
   </div>
 </div>
 
 <script>
-// ========= CLOCK =========
-function updateClock() {
-  const now = new Date();
-  const opts = { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' };
-  const time = now.toLocaleTimeString('es-AR', opts);
-  const dateStr = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Argentina/Buenos_Aires' });
-  document.getElementById('clock').textContent = `${dateStr} — ${time}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
+// ========= DATA IOL — actualizado 02/06/2026 10:30 =========
+const IOL_POSITIONS = [
+  {id:1,ticker:'YPFD',name:'YPF',tipo:'Acción',cantidad:20,precioCompra:81500,precioActual:81950,varDia:0.49},
+  {id:2,ticker:'NVDA',name:'CEDEAR Nvidia Corp.',tipo:'CEDEAR',cantidad:79,precioCompra:13960,precioActual:14450,varDia:3.95},
+  {id:3,ticker:'MSFT',name:'CEDEAR Microsoft Corp.',tipo:'CEDEAR',cantidad:24,precioCompra:22940,precioActual:22230,varDia:-3.05},
+  {id:4,ticker:'AAPL',name:'CEDEAR Apple Inc.',tipo:'CEDEAR',cantidad:23,precioCompra:22950,precioActual:23170,varDia:1.26},
+  {id:5,ticker:'AMZN',name:'CEDEAR Amazon.com Inc.',tipo:'CEDEAR',cantidad:129,precioCompra:2705,precioActual:2660,varDia:-1.66},
+  {id:6,ticker:'PAMP',name:'Pampa Energía',tipo:'Acción',cantidad:61,precioCompra:5245,precioActual:5160,varDia:-1.52},
+  {id:7,ticker:'META',name:'CEDEAR Meta Platforms',tipo:'CEDEAR',cantidad:6,precioCompra:37400,precioActual:37740,varDia:0.85},
+  {id:8,ticker:'MELI',name:'CEDEAR MercadoLibre Inc.',tipo:'CEDEAR',cantidad:10,precioCompra:21530,precioActual:21060,varDia:-2.18},
+  {id:9,ticker:'SPHQ',name:'CEDEAR S&P 500 Quality ETF',tipo:'CEDEAR',cantidad:23,precioCompra:9045,precioActual:9100,varDia:0.60},
+  {id:10,ticker:'MCD',name:"CEDEAR McDonald's Corp.",tipo:'CEDEAR',cantidad:12,precioCompra:17210,precioActual:17110,varDia:0.09},
+  {id:11,ticker:'SHOP',name:'CEDEAR Shopify Inc.',tipo:'CEDEAR',cantidad:111,precioCompra:1714,precioActual:1648,varDia:-3.96},
+  {id:12,ticker:'V',name:'CEDEAR Visa Inc.',tipo:'CEDEAR',cantidad:7,precioCompra:26740,precioActual:26220,varDia:-2.01},
+  {id:13,ticker:'B',name:'CEDEAR Barrick Mining Corp.',tipo:'CEDEAR',cantidad:4,precioCompra:31600,precioActual:31600,varDia:-0.12},
+  {id:14,ticker:'BABA',name:'CEDEAR Alibaba Group',tipo:'CEDEAR',cantidad:6,precioCompra:20840,precioActual:21850,varDia:4.89},
+  {id:15,ticker:'PAAS',name:'CEDEAR Pan American Silver',tipo:'CEDEAR',cantidad:4,precioCompra:27580,precioActual:27520,varDia:-0.72},
+  {id:16,ticker:'HMY',name:'CEDEAR Harmony Gold Mining',tipo:'CEDEAR',cantidad:4,precioCompra:26320,precioActual:26280,varDia:0.07},
+  {id:17,ticker:'BIDU',name:'CEDEAR Baidu Inc.',tipo:'CEDEAR',cantidad:4,precioCompra:17890,precioActual:18450,varDia:2.95},
+  {id:18,ticker:'NIO',name:'CEDEAR NIO Inc.',tipo:'CEDEAR',cantidad:18,precioCompra:2218,precioActual:2239,varDia:1.17},
+  {id:19,ticker:'JD',name:'CEDEAR JD.com Inc.',tipo:'CEDEAR',cantidad:2,precioCompra:10850,precioActual:11340,varDia:4.22},
+  {id:20,ticker:'IOLCAMA',name:'FCI IOL Cash Management',tipo:'FCI',cantidad:192186.62,precioCompra:11.41,precioActual:11.413864,varDia:0.06},
+  {id:21,ticker:'IOLDOLD',name:'FCI IOL Dólar Ahorro Plus',tipo:'FCI',cantidad:22.65,precioCompra:1.08,precioActual:1.078551,varDia:0.05},
+];
 
-// Set sample retro time
-document.getElementById('retro-time-sample').textContent = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' });
+// ========= STATE =========
+let portfolio = JSON.parse(localStorage.getItem('iol-mob-portfolio')||'null');
+if(!portfolio){portfolio=IOL_POSITIONS;localStorage.setItem('iol-mob-portfolio',JSON.stringify(portfolio));}
+let alerts = JSON.parse(localStorage.getItem('iol-mob-alerts')||'[]');
+let retros = JSON.parse(localStorage.getItem('iol-mob-retros')||'[]');
+let currentTab = 'portfolio';
+let newsFilter = 'all';
 
 // ========= TABS =========
-function showTab(tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + tab).classList.add('active');
-  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-  if (tab === 'noticias') loadNews();
-  if (tab === 'alertas') renderAlerts();
+function showTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('btab-'+tab).classList.add('active');
+  currentTab = tab;
+  document.getElementById('fab').style.display = (tab==='retro')?'none':'flex';
+  if(tab==='noticias'){renderNews();fetchMarket();}
+  if(tab==='alertas'){renderAlerts();}
+  document.getElementById('scroll-area').scrollTop=0;
 }
 
-// ========= MODAL =========
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => {
-  if (e.target === o) o.classList.remove('open');
-}));
+function onFab(){
+  if(currentTab==='portfolio') openSheet('pos-sheet');
+  else if(currentTab==='alertas') openSheet('alert-sheet');
+}
+
+// ========= SHEETS =========
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+
+// ========= CLOCK =========
+function tick(){
+  const now=new Date();
+  const tz='America/Argentina/Buenos_Aires';
+  document.getElementById('clock-time').textContent=now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',timeZone:tz});
+  document.getElementById('clock-date').textContent=now.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',timeZone:tz});
+}
+setInterval(tick,1000);tick();
 
 // ========= PORTFOLIO =========
-// Datos IOL actualizados automáticamente — 2026-06-02
-const IOL_DATA = [
-  {id:1,ticker:"NVDA",name:"Cedear Nvidia Corporation",tipo:"CEDEAR",cantidad:79,precioCompra:14500,precioActual:14500,varDia:4.31},
-  {id:2,ticker:"AAPL",name:"Cedear Apple Inc.",tipo:"CEDEAR",cantidad:23,precioCompra:23180,precioActual:23180,varDia:1.31},
-  {id:3,ticker:"MSFT",name:"Cedear Microsoft Corp.",tipo:"CEDEAR",cantidad:24,precioCompra:22180,precioActual:22180,varDia:-3.27},
-  {id:4,ticker:"META",name:"Cedear Meta Platforms",tipo:"CEDEAR",cantidad:6,precioCompra:37840,precioActual:37840,varDia:1.12},
-  {id:5,ticker:"SPHQ",name:"CEDEAR S&P 500 Quality ETF",tipo:"CEDEAR",cantidad:23,precioCompra:9120,precioActual:9120,varDia:0.82},
-  {id:6,ticker:"MCD",name:"Cedear McDonald's Corporation",tipo:"CEDEAR",cantidad:12,precioCompra:17120,precioActual:17120,varDia:0.14},
-  {id:7,ticker:"MELI",name:"Cedear MercadoLibre Inc.",tipo:"CEDEAR",cantidad:10,precioCompra:21060,precioActual:21060,varDia:-2.18},
-  {id:8,ticker:"AMZN",name:"Cedear Amazon.Com, Inc",tipo:"CEDEAR",cantidad:129,precioCompra:2662.5,precioActual:2662.5,varDia:-1.57},
-  {id:9,ticker:"V",name:"Cedear Visa Inc",tipo:"CEDEAR",cantidad:7,precioCompra:26140,precioActual:26140,varDia:-2.31},
-  {id:10,ticker:"SHOP",name:"Cedear Shopify Inc.",tipo:"CEDEAR",cantidad:111,precioCompra:1637,precioActual:1637,varDia:-4.60},
-  {id:11,ticker:"BABA",name:"Cedear Alibaba Group",tipo:"CEDEAR",cantidad:6,precioCompra:21900,precioActual:21900,varDia:5.13},
-  {id:12,ticker:"B",name:"Cedear Barrick Mining Corp.",tipo:"CEDEAR",cantidad:4,precioCompra:31560,precioActual:31560,varDia:-0.25},
-  {id:13,ticker:"PAAS",name:"Cedear Pan American Silver",tipo:"CEDEAR",cantidad:4,precioCompra:27540,precioActual:27540,varDia:-0.64},
-  {id:14,ticker:"HMY",name:"Cedear Harmony Gold Mining",tipo:"CEDEAR",cantidad:4,precioCompra:26420,precioActual:26420,varDia:0.60},
-  {id:15,ticker:"BIDU",name:"Cedear Baidu, Inc.",tipo:"CEDEAR",cantidad:4,precioCompra:18450,precioActual:18450,varDia:2.95},
-  {id:16,ticker:"NIO",name:"Cedear Nio Inc.",tipo:"CEDEAR",cantidad:18,precioCompra:2235,precioActual:2235,varDia:0.99},
-  {id:17,ticker:"JD",name:"Cedear JD.Com, Inc.",tipo:"CEDEAR",cantidad:2,precioCompra:11340,precioActual:11340,varDia:4.22},
-  {id:18,ticker:"YPFD",name:"YPF",tipo:"Acción",cantidad:20,precioCompra:81950,precioActual:81950,varDia:0.49},
-  {id:19,ticker:"PAMP",name:"Pampa Energía",tipo:"Acción",cantidad:61,precioCompra:5150,precioActual:5150,varDia:-1.71},
-  {id:20,ticker:"IOLCAMA",name:"IOL Cash Management",tipo:"FCI",cantidad:192186.62,precioCompra:11.413864,precioActual:11.413864,varDia:0.06},
-  {id:21,ticker:"IOLDOLD",name:"IOL Dólar Ahorro Plus (USD)",tipo:"FCI",cantidad:22.65,precioCompra:1.078551,precioActual:1.078551,varDia:0.05}
-];
-let portfolio = JSON.parse(localStorage.getItem('iol-portfolio') || 'null');
-if (!portfolio || portfolio.length === 0) { portfolio = IOL_DATA; savePortfolio(); }
+function savePortfolio(){localStorage.setItem('iol-mob-portfolio',JSON.stringify(portfolio));}
 
-function savePortfolio() { localStorage.setItem('iol-portfolio', JSON.stringify(portfolio)); }
-
-function addPosition() {
-  const ticker = document.getElementById('pos-ticker').value.trim().toUpperCase();
-  const name = document.getElementById('pos-name').value.trim();
-  const tipo = document.getElementById('pos-tipo').value;
-  const cantidad = parseFloat(document.getElementById('pos-cantidad').value);
-  const precioCompra = parseFloat(document.getElementById('pos-precio-compra').value);
-  const precioActual = parseFloat(document.getElementById('pos-precio-actual').value);
-
-  if (!ticker || isNaN(cantidad) || isNaN(precioCompra) || isNaN(precioActual)) {
-    alert('Por favor completá todos los campos requeridos.'); return;
-  }
-
-  portfolio.push({ id: Date.now(), ticker, name: name || ticker, tipo, cantidad, precioCompra, precioActual });
-  savePortfolio();
-  renderPortfolio();
-  closeModal('add-position-modal');
-  ['pos-ticker','pos-name','pos-cantidad','pos-precio-compra','pos-precio-actual'].forEach(id => document.getElementById(id).value = '');
+function fmtARS(n){
+  if(isNaN(n)||n===null)return'$0';
+  const abs=Math.abs(n);
+  if(abs>=1000000)return'$'+(abs/1000000).toFixed(2)+'M';
+  if(abs>=1000)return'$'+abs.toLocaleString('es-AR',{maximumFractionDigits:0});
+  return'$'+abs.toFixed(2);
+}
+function fmtARSfull(n){
+  if(isNaN(n))return'$0';
+  return'$'+Math.abs(n).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
-function removePosition(id) {
-  portfolio = portfolio.filter(p => p.id !== id);
-  savePortfolio();
-  renderPortfolio();
-}
-
-function renderPortfolio() {
-  const tbody = document.getElementById('portfolio-tbody');
-  const empty = document.getElementById('portfolio-empty');
-  const table = document.getElementById('portfolio-table');
-
-  if (portfolio.length === 0) {
-    empty.style.display = 'block';
-    table.style.display = 'none';
-    updateSummary();
-    renderAllocation();
-    renderTopMovers();
-    return;
-  }
-
-  empty.style.display = 'none';
-  table.style.display = 'table';
-
-  tbody.innerHTML = portfolio.map(p => {
-    const ganancia = (p.precioActual - p.precioCompra) * p.cantidad;
-    const variacion = ((p.precioActual - p.precioCompra) / p.precioCompra) * 100;
-    const valuacion = p.precioActual * p.cantidad;
-    const cls = variacion >= 0 ? 'up' : 'down';
-    const sign = variacion >= 0 ? '+' : '';
-    const diaVal = p.varDia !== undefined ? p.varDia : 0;
-    const diaCls = diaVal >= 0 ? 'up' : 'down';
-    const diaSign = diaVal >= 0 ? '+' : '';
-    return `<tr>
-      <td><span class="ticker-badge">${p.ticker}</span></td>
-      <td style="color:var(--text-dim)">${p.name}</td>
-      <td><span style="font-size:11px;color:var(--text-dim)">${p.tipo}</span></td>
-      <td>${fmtNum(p.cantidad)}</td>
-      <td>${fmtARS(p.precioCompra)}</td>
-      <td style="font-weight:600;">${fmtARS(p.precioActual)}</td>
-      <td class="${diaCls}" style="font-weight:700;">${diaSign}${diaVal.toFixed(2)}%</td>
-      <td class="${cls}" style="font-weight:700;">${sign}${variacion.toFixed(2)}%</td>
-      <td class="${cls}">${sign}${fmtARS(ganancia)}</td>
-      <td style="font-weight:600;">${fmtARS(valuacion)}</td>
-      <td><button class="btn-red" onclick="removePosition(${p.id})">✕</button></td>
-    </tr>`;
-  }).join('');
-
-  updateSummary();
-  renderAllocation();
-  renderTopMovers();
-}
-
-function updateSummary() {
-  let totalVal = 0, totalCosto = 0, dayResult = 0;
-  portfolio.forEach(p => {
-    const val = p.precioActual * p.cantidad;
-    const costo = p.precioCompra * p.cantidad;
-    totalVal += val;
-    totalCosto += costo;
-    dayResult += (p.precioActual - p.precioCompra) * p.cantidad * 0.01; // sim
-  });
-  const totalGain = totalVal - totalCosto;
-  const totalGainPct = totalCosto > 0 ? (totalGain / totalCosto) * 100 : 0;
-
-  document.getElementById('total-value').textContent = fmtARS(totalVal);
-  document.getElementById('total-usd').textContent = `USD ${fmtARS(totalVal / 1290)}`;
-  document.getElementById('day-result').textContent = (totalGain >= 0 ? '+' : '') + fmtARS(totalGain * 0.005);
-  document.getElementById('day-pct').textContent = (totalGainPct >= 0 ? '+' : '') + (totalGainPct * 0.005).toFixed(2) + '%';
-  document.getElementById('total-gain').textContent = (totalGain >= 0 ? '+' : '') + fmtARS(totalGain);
-  document.getElementById('total-gain-pct').textContent = (totalGainPct >= 0 ? '+' : '') + totalGainPct.toFixed(2) + '%';
-  document.getElementById('pos-count').textContent = portfolio.length;
-  document.getElementById('pos-sub').textContent = 'activo' + (portfolio.length !== 1 ? 's' : '') + ' distintos';
-
-  const gainEl = document.getElementById('total-gain');
-  gainEl.className = 'card-value ' + (totalGain >= 0 ? 'up' : 'down');
-}
-
-function renderAllocation() {
-  const total = portfolio.reduce((s, p) => s + p.precioActual * p.cantidad, 0);
-  const types = {};
-  portfolio.forEach(p => {
-    types[p.tipo] = (types[p.tipo] || 0) + p.precioActual * p.cantidad;
-  });
-
-  const colors = ['#00e676','#448aff','#ffd740','#ff5252','#aa00ff','#00b0ff'];
-  const legend = document.getElementById('legend-container');
-  legend.innerHTML = '';
-  Object.entries(types).forEach(([tipo, val], i) => {
-    const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
-    legend.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${colors[i % colors.length]}"></div><span style="flex:1">${tipo}</span><span style="color:var(--text-dim)">${pct}%</span></div>`;
-  });
-
-  const varPct = types['Acción'] || types['CEDEAR'] ? ((( (types['Acción']||0) + (types['CEDEAR']||0) ) / total) * 100) : 0;
-  document.getElementById('donut-pct').textContent = Math.round(varPct) + '%';
-  const circ = 2 * Math.PI * 54;
-  document.getElementById('donut-circle').setAttribute('stroke-dasharray', `${circ * varPct / 100} ${circ}`);
-}
-
-function renderTopMovers() {
-  const list = document.getElementById('top-movers-list');
-  if (portfolio.length === 0) {
-    list.innerHTML = '<div class="empty-state" style="padding:20px 0;"><div class="empty-icon">📈</div><div class="empty-text" style="font-size:12px;">Cargá posiciones para ver top movers</div></div>';
-    return;
-  }
-  const sorted = [...portfolio].sort((a, b) => {
-    const va = (a.precioActual - a.precioCompra) / a.precioCompra;
-    const vb = (b.precioActual - b.precioCompra) / b.precioCompra;
-    return vb - va;
-  });
-  list.innerHTML = sorted.slice(0, 5).map(p => {
-    const var_ = ((p.precioActual - p.precioCompra) / p.precioCompra * 100);
-    const cls = var_ >= 0 ? 'up' : 'down';
-    const sign = var_ >= 0 ? '+' : '';
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span class="ticker-badge">${p.ticker}</span>
-      <span style="flex:1;font-size:12px;color:var(--text-dim)">${p.name}</span>
-      <span class="${cls}" style="font-size:13px;font-weight:700;">${sign}${var_.toFixed(2)}%</span>
+function renderPortfolio(){
+  const list=document.getElementById('pos-list');
+  const empty=document.getElementById('pos-empty');
+  if(portfolio.length===0){empty.style.display='block';list.innerHTML='';updateSummary();return;}
+  empty.style.display='none';
+  list.innerHTML=portfolio.map(p=>{
+    const val=p.precioActual*p.cantidad;
+    const gan=((p.precioActual-p.precioCompra)/p.precioCompra*100);
+    const ganARS=(p.precioActual-p.precioCompra)*p.cantidad;
+    const dia=p.varDia||0;
+    const diaCls=dia>=0?'up':'down';
+    const ganCls=gan>=0?'up':'down';
+    return`<div class="pos-card">
+      <div class="pos-top">
+        <span class="pos-ticker">${p.ticker}</span>
+        <span class="pos-tipo">${p.tipo}</span>
+      </div>
+      <div class="pos-name">${p.name}</div>
+      <div class="pos-nums">
+        <div class="pos-num"><div class="pos-num-label">Cant.</div><div class="pos-num-val">${p.cantidad>=1000?(p.cantidad/1000).toFixed(1)+'k':p.cantidad}</div></div>
+        <div class="pos-num"><div class="pos-num-label">P.Actual</div><div class="pos-num-val">${fmtARS(p.precioActual)}</div></div>
+        <div class="pos-num"><div class="pos-num-label">Valuación</div><div class="pos-num-val">${fmtARS(val)}</div></div>
+      </div>
+      <div class="pos-dia-bar">
+        <span class="pos-valuacion">P&L: <span class="${ganCls}">${gan>=0?'+':''}${gan.toFixed(1)}% (${gan>=0?'+':''}${fmtARS(ganARS)})</span></span>
+        <span class="pos-dia ${diaCls}">${dia>=0?'+':''}${dia.toFixed(2)}% hoy</span>
+      </div>
     </div>`;
   }).join('');
+  updateSummary();
 }
 
-function sortTable(field) {
-  portfolio.sort((a, b) => {
-    const gaA = (a.precioActual - a.precioCompra) * a.cantidad;
-    const gaB = (b.precioActual - b.precioCompra) * b.cantidad;
-    const varA = (a.precioActual - a.precioCompra) / a.precioCompra;
-    const varB = (b.precioActual - b.precioCompra) / b.precioCompra;
-    const valA = a.precioActual * a.cantidad;
-    const valB = b.precioActual * b.cantidad;
-    const map = { ticker: [a.ticker, b.ticker], tipo: [a.tipo, b.tipo], cantidad: [a.cantidad, b.cantidad], precio_compra: [a.precioCompra, b.precioCompra], precio_actual: [a.precioActual, b.precioActual], variacion: [varA, varB], ganancia: [gaA, gaB], valuacion: [valA, valB] };
-    const [va, vb] = map[field] || [0, 0];
-    return typeof va === 'string' ? va.localeCompare(vb) : vb - va;
-  });
-  renderPortfolio();
-}
+function updateSummary(){
+  const total=portfolio.reduce((s,p)=>s+p.precioActual*p.cantidad,0);
+  const CCL=1290;
+  // weighted avg daily change
+  const wDay=portfolio.reduce((s,p)=>s+(p.varDia||0)*(p.precioActual*p.cantidad),0)/Math.max(total,1);
 
-function syncFromIOL() {
-  if (confirm('Recargar posiciones con los últimos datos de IOL (2026-06-02)?\n\nEsto reemplazará las posiciones actuales con los datos sincronizados.')) {
-    portfolio = IOL_DATA.map(p => ({...p}));
-    savePortfolio();
-    renderPortfolio();
-    const btn = document.querySelector('.btn[onclick="syncFromIOL()"]');
-    if (btn) { btn.textContent = '✓ Sincronizado'; setTimeout(() => btn.textContent = '↻ Sincronizar IOL', 2000); }
+  document.getElementById('c-total').textContent=fmtARS(total);
+  document.getElementById('c-usd').textContent='USD '+fmtARS(total/CCL);
+  document.getElementById('sb-total').textContent=fmtARS(total);
+  document.getElementById('sb-pos').textContent=portfolio.length;
+
+  const dayEl=document.getElementById('c-hoy');
+  dayEl.textContent=(wDay>=0?'+':'')+wDay.toFixed(2)+'%';
+  dayEl.className='card-val '+(wDay>=0?'up':'down');
+  document.getElementById('c-hoy-s').textContent='variación ponderada';
+
+  const sbHoy=document.getElementById('sb-hoy');
+  sbHoy.textContent=(wDay>=0?'+':'')+wDay.toFixed(2)+'%';
+  sbHoy.className='sum-val '+(wDay>=0?'up':'down');
+
+  // top gainer / loser
+  const sorted=[...portfolio].filter(p=>p.varDia!==undefined).sort((a,b)=>b.varDia-a.varDia);
+  if(sorted.length>0){
+    const g=sorted[0];
+    document.getElementById('c-gain').textContent='+'+g.varDia.toFixed(2)+'%';
+    document.getElementById('c-gain-s').textContent=g.ticker;
+    const l=sorted[sorted.length-1];
+    document.getElementById('c-loss').textContent=l.varDia.toFixed(2)+'%';
+    document.getElementById('c-loss-s').textContent=l.ticker;
   }
+
+  const now=new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Argentina/Buenos_Aires'});
+  document.getElementById('last-upd-txt').textContent=now;
+  document.getElementById('sb-upd').textContent=now.split(',')[1]?.trim()||now;
 }
 
-function clearPortfolio() {
-  if (confirm('¿Seguro que querés limpiar todo el portfolio?')) {
-    portfolio = [];
-    savePortfolio();
-    renderPortfolio();
-  }
+function addPosition(){
+  const ticker=document.getElementById('ps-ticker').value.trim().toUpperCase();
+  const name=document.getElementById('ps-name').value.trim();
+  const tipo=document.getElementById('ps-tipo').value;
+  const cantidad=parseFloat(document.getElementById('ps-cant').value);
+  const compra=parseFloat(document.getElementById('ps-compra').value);
+  const actual=parseFloat(document.getElementById('ps-actual').value);
+  const vardia=parseFloat(document.getElementById('ps-vardia').value)||0;
+  if(!ticker||isNaN(cantidad)||isNaN(compra)||isNaN(actual)){alert('Completá todos los campos');return;}
+  portfolio.push({id:Date.now(),ticker,name:name||ticker,tipo,cantidad,precioCompra:compra,precioActual:actual,varDia:vardia});
+  savePortfolio();renderPortfolio();closeSheet('pos-sheet');
+  ['ps-ticker','ps-name','ps-cant','ps-compra','ps-actual','ps-vardia'].forEach(id=>document.getElementById(id).value='');
 }
 
 // ========= NEWS =========
-const newsData = [
-  { title: 'Merval sube 2.1% impulsado por energía y finanzas en apertura del lunes', source: 'Bloomberg Argentina', desc: 'Las acciones del Merval iniciaron la semana con buen pie, lideradas por YPF y Banco Galicia. El índice avanzó 2.1% en la primera hora de operaciones.', time: 'Hace 45 min', cat: 'argentina', url: 'https://www.bloomberg.com' },
-  { title: 'Fed en foco: mercado descuenta pausa en tasas para reunión de junio', source: 'Reuters', desc: 'Los futuros sobre tasas de la Fed muestran un 94% de probabilidad de que la tasa se mantenga estable en 4.25%-4.5% en la reunión del miércoles. El dólar se debilita levemente.', time: 'Hace 1 hora', cat: 'macro', url: 'https://www.reuters.com' },
-  { title: 'Bitcoin supera los USD 105.000 y vuelve a zona de máximos históricos', source: 'CoinDesk', desc: 'El criptoactivo recuperó terreno apoyado en flujos institucionales y expectativas de aprobación de nuevos ETFs. Ethereum sube 3.8% en las últimas 24 horas.', time: 'Hace 2 horas', cat: 'crypto', url: 'https://www.coindesk.com' },
-  { title: 'Riesgo país argentino cae a 1.420 pb, mínimo desde 2018', source: 'Ámbito Financiero', desc: 'La compresión de spreads soberanos argentinos continúa, reflejo de mejoras en reservas del BCRA y cumplimiento del acuerdo con el FMI. Los bonos AL30 y GD30 lideran las ganancias.', time: 'Hace 2 horas', cat: 'argentina', url: 'https://www.ambito.com' },
-  { title: 'S&P 500 cierra en máximos: tecnología lidera rally de fin de mes', source: 'WSJ', desc: 'El índice terminó mayo con una ganancia del 4.8% mensual, el mejor mes del año. Apple, Microsoft y Nvidia impulsaron el rally en un contexto de menor volatilidad macro.', time: 'Hace 3 horas', cat: 'global', url: 'https://www.wsj.com' },
-  { title: 'YPF: analistas elevan precio objetivo tras resultados Q1 por encima de esperado', source: 'Infobae', desc: 'La empresa petrolera estatal reportó ganancias netas de USD 380M en el primer trimestre, superando las estimaciones del mercado. Los ADRs subieron 5.2% en Wall Street.', time: 'Hace 4 horas', cat: 'acciones', url: 'https://www.infobae.com' },
-  { title: 'Dólar blue sin cambios: se mantiene en $1.270 con demanda estacional', source: 'El Cronista', desc: 'El tipo de cambio informal cerró la semana sin variaciones significativas. El CCL opera en torno a $1.285 con escasa volatilidad en el inicio del mes.', time: 'Hace 5 horas', cat: 'argentina', url: 'https://www.cronista.com' },
-  { title: 'Nvidia supera estimaciones: ingresos de IA crecen 260% interanual', source: 'CNBC', desc: 'El fabricante de chips reportó ingresos de USD 26.000M en el trimestre, impulsados por la demanda de hardware de IA. La acción sube 6% en afterhours.', time: 'Hace 6 horas', cat: 'acciones', url: 'https://www.cnbc.com' },
-  { title: 'Oro toca USD 2.950 la onza ante tensiones geopolíticas en Medio Oriente', source: 'MarketWatch', desc: 'El metal precioso recupera su rol de activo refugio en una jornada marcada por escalada de tensiones. La plata sube 2.4% acompañando el rally.', time: 'Hace 7 horas', cat: 'macro', url: 'https://www.marketwatch.com' },
-  { title: 'CEDEARs: qué papeles tuvieron mejor performance en mayo 2026', source: 'CNN en Español', desc: 'Un análisis de los CEDEARs más operados en el mercado argentino durante el mes de mayo. Las tecnológicas lideraron, con MSFT y GOOGL acumulando subas superiores al 12%.', time: 'Hace 8 horas', cat: 'argentina', url: 'https://cnnespanol.cnn.com' },
-  { title: 'Ethereum activa nueva actualización: costos de gas caen 80%', source: 'Decrypt', desc: 'La actualización "Pectra" entró en funcionamiento mejorando drásticamente la eficiencia de la red. Los volúmenes en DeFi alcanzan nuevos máximos semanales.', time: 'Hace 10 horas', cat: 'crypto', url: 'https://decrypt.co' },
-  { title: 'Macro argentina: actividad económica sube 5.2% interanual en abril', source: 'INDEC / La Nación', desc: 'El EMAE publicado por INDEC mostró una recuperación sostenida en todos los sectores. Construcción y comercio lideraron el crecimiento. El dato supera las proyecciones del FMI.', time: 'Hace 12 horas', cat: 'macro', url: 'https://www.lanacion.com.ar' },
+const newsData=[
+  {title:'Merval sube 2.1% impulsado por energía y finanzas',source:'Bloomberg Ar',desc:'YPF y Banco Galicia lideran las subas. El índice avanzó 2.1% en la primera hora.',time:'Hace 45 min',cat:'argentina',url:'https://www.bloomberg.com'},
+  {title:'Fed en foco: mercado descuenta pausa en tasas para junio',source:'Reuters',desc:'Futuros sobre tasas muestran 94% de probabilidad de que la tasa se mantenga estable.',time:'Hace 1 hora',cat:'macro',url:'https://www.reuters.com'},
+  {title:'Bitcoin supera los USD 105.000 y vuelve a zona de máximos',source:'CoinDesk',desc:'El criptoactivo recuperó terreno apoyado en flujos institucionales.',time:'Hace 2 horas',cat:'crypto',url:'https://www.coindesk.com'},
+  {title:'Riesgo país argentino cae a 1.420 pb, mínimo desde 2018',source:'Ámbito',desc:'Compresión de spreads soberanos refleja mejoras en reservas del BCRA.',time:'Hace 2 horas',cat:'argentina',url:'https://www.ambito.com'},
+  {title:'S&P 500 cierra en máximos: tecnología lidera rally de fin de mes',source:'WSJ',desc:'El índice terminó mayo con ganancia del 4.8%, el mejor mes del año.',time:'Hace 3 horas',cat:'global',url:'https://www.wsj.com'},
+  {title:'YPF: analistas elevan precio objetivo tras resultados Q1',source:'Infobae',desc:'Ganancias netas de USD 380M en Q1, superando estimaciones. ADRs +5.2%.',time:'Hace 4 horas',cat:'acciones',url:'https://www.infobae.com'},
+  {title:'Dólar blue sin cambios: se mantiene en $1.270',source:'El Cronista',desc:'El CCL opera en $1.285 con escasa volatilidad en el inicio del mes.',time:'Hace 5 horas',cat:'argentina',url:'https://www.cronista.com'},
+  {title:'Nvidia supera estimaciones: ingresos de IA crecen 260% interanual',source:'CNBC',desc:'Ingresos de USD 26.000M. La acción sube 6% en afterhours.',time:'Hace 6 horas',cat:'acciones',url:'https://www.cnbc.com'},
+  {title:'Oro toca USD 2.950 la onza ante tensiones geopolíticas',source:'MarketWatch',desc:'El metal recupera su rol de activo refugio. La plata sube 2.4%.',time:'Hace 7 horas',cat:'macro',url:'https://www.marketwatch.com'},
+  {title:'Macro argentina: actividad sube 5.2% interanual en abril',source:'INDEC',desc:'EMAE muestra recuperación sostenida. Construcción y comercio lideran.',time:'Hace 12 horas',cat:'macro',url:'https://www.lanacion.com.ar'},
 ];
 
-let newsFilter = 'all';
-let newsShown = 6;
-
-function loadNews() {
-  renderNews();
-}
-
-function filterNews(cat, el) {
-  newsFilter = cat;
-  newsShown = 6;
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+function filterNews(cat,el){
+  newsFilter=cat;
+  document.querySelectorAll('#news-pills .pill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   renderNews();
 }
 
-function loadMoreNews() {
-  newsShown += 4;
-  renderNews();
+function renderNews(){
+  const items=newsFilter==='all'?newsData:newsData.filter(n=>n.cat===newsFilter);
+  const list=document.getElementById('news-list');
+  if(items.length===0){list.innerHTML='<div class="empty"><div class="empty-icon">📰</div><div class="empty-text">Sin noticias en esta categoría</div></div>';return;}
+  list.innerHTML=items.map(n=>`<a class="news-card" href="${n.url}" target="_blank" rel="noopener">
+    <div class="news-src">${n.source}</div>
+    <div class="news-title">${n.title}</div>
+    <div class="news-desc">${n.desc}</div>
+    <div class="news-time">${n.time}</div>
+  </a>`).join('');
 }
 
-function renderNews() {
-  const filtered = newsFilter === 'all' ? newsData : newsData.filter(n => n.cat === newsFilter);
-  const grid = document.getElementById('news-grid');
-  const items = filtered.slice(0, newsShown);
-  if (items.length === 0) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:span 2;padding:40px 0;"><div class="empty-icon">📰</div><div class="empty-text">No hay noticias en esta categoría</div></div>';
-    return;
-  }
-  grid.innerHTML = items.map(n => `
-    <a class="news-card" href="${n.url}" target="_blank" rel="noopener">
-      <div class="news-source">${n.source}</div>
-      <div class="news-title">${n.title}</div>
-      <div class="news-desc">${n.desc}</div>
-      <div class="news-time">${n.time}</div>
-    </a>`).join('');
+// ========= MARKET TICKERS =========
+async function fetchMarket(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    if(r.ok){const d=await r.json();if(d.bitcoin){setT('btc','$'+Math.round(d.bitcoin.usd).toLocaleString(),d.bitcoin.usd_24h_change||0);}}
+  }catch(e){}
+  // Simulated
+  const sim=(base,v)=>{const c=(Math.random()-.45)*v;return{val:base*(1+c/100),chg:c};};
+  [['spx',5280,.8],['ndx',18900,1.1],['merval',2850000,1.5],['ccl',1285,.3],['blue',1270,.5],['gold',2950,.6]].forEach(([id,b,v])=>{
+    const{val,chg}=sim(b,v);
+    const fmt=b>=100000?Math.round(val/1000)+'k':'$'+Math.round(val).toLocaleString();
+    setT(id,fmt,chg);
+  });
 }
 
-// ========= RETROSPECTIVA =========
-let retros = JSON.parse(localStorage.getItem('iol-retros') || '[]');
-
-function newRetro() {
-  const form = document.getElementById('new-retro-form');
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
-  document.getElementById('retro-date-input').value = new Date().toISOString().split('T')[0];
+function setT(id,val,chg){
+  const el=document.getElementById('t-'+id);
+  const ch=document.getElementById('tc-'+id);
+  if(el)el.textContent=val;
+  if(ch){ch.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'%';ch.className='ticker-chg '+(chg>=0?'up':'down');}
 }
 
-function saveRetro() {
-  const date = document.getElementById('retro-date-input').value;
-  const sentiment = document.getElementById('retro-sentiment').value;
-  const summary = document.getElementById('retro-summary').value.trim();
-  const alerts = document.getElementById('retro-alerts').value.trim().split('\n').filter(Boolean);
-  const ops = document.getElementById('retro-ops').value.trim().split('\n').filter(Boolean);
-
-  if (!summary) { alert('Completá al menos el resumen ejecutivo.'); return; }
-
-  const retro = { id: Date.now(), date, sentiment, summary, alerts, ops };
-  retros.unshift(retro);
-  localStorage.setItem('iol-retros', JSON.stringify(retros));
-  document.getElementById('new-retro-form').style.display = 'none';
-  renderRetros();
+// ========= RETRO =========
+function saveRetro(){
+  const date=document.getElementById('rs-date').value;
+  const sent=document.getElementById('rs-sent').value;
+  const summary=document.getElementById('rs-summary').value.trim();
+  const als=document.getElementById('rs-alerts').value.trim().split('\n').filter(Boolean);
+  const ops=document.getElementById('rs-ops').value.trim().split('\n').filter(Boolean);
+  if(!summary){alert('Completá el resumen');return;}
+  retros.unshift({id:Date.now(),date,sent,summary,als,ops});
+  localStorage.setItem('iol-mob-retros',JSON.stringify(retros));
+  renderRetros();closeSheet('retro-sheet');
 }
 
-function renderRetros() {
-  const list = document.getElementById('retro-list');
-  if (retros.length === 0) return;
-
-  const savedHTML = retros.map(r => {
-    const sentMap = { alcista: 'alcista', bajista: 'bajista', neutral: 'neutral' };
-    const sentLabel = { alcista: '📈 Alcista', bajista: '📉 Bajista', neutral: '⚖️ Neutral' };
-    return `<div class="retro-card">
-      <div class="retro-header">
-        <div style="flex:1">
-          <div style="font-size:15px;font-weight:700;margin-bottom:3px;">Retrospectiva — ${r.date}</div>
-          <div class="retro-date">Guardada manualmente</div>
-        </div>
-        <span class="retro-badge ${sentMap[r.sentiment]}">${sentLabel[r.sentiment]}</span>
-      </div>
-      <div class="retro-section-title">📋 Resumen Ejecutivo</div>
-      <p class="retro-text">${r.summary}</p>
-      ${r.alerts.length ? '<div class="retro-section-title">🚨 Alertas</div>' + r.alerts.map(a => `<div class="retro-alert">⚠️ <span>${a}</span></div>`).join('') : ''}
-      ${r.ops.length ? '<div class="retro-section-title">💡 Oportunidades</div>' + r.ops.map(o => `<div class="retro-opportunity">💚 <span>${o}</span></div>`).join('') : ''}
-      <button class="btn-red" style="margin-top:16px;" onclick="deleteRetro(${r.id})">Eliminar</button>
-    </div>`;
-  }).join('');
-
-  document.getElementById('retro-sample').insertAdjacentHTML('afterend', savedHTML);
-}
-
-function deleteRetro(id) {
-  retros = retros.filter(r => r.id !== id);
-  localStorage.setItem('iol-retros', JSON.stringify(retros));
-  location.reload();
+function renderRetros(){
+  const list=document.getElementById('retro-list');
+  const sentLabel={alcista:'📈 Alcista',bajista:'📉 Bajista',neutral:'⚖️ Neutral'};
+  const all=[
+    {id:0,date:'01/06/2026',sent:'neutral',summary:'El mercado abrió la semana con sesgo positivo, impulsado por mejoras en el frente comercial global y datos de actividad manufacturera por encima de expectativas. El Merval consolidó ganancias con volumen moderado, mientras el dólar CCL se mantuvo estable en la zona de $1.280-$1.295.',als:['Reunión de la Fed el miércoles. Tono del comunicado clave para emergentes.','Inflación PCE de EE.UU. el viernes. Dato caliente podría presionar al Merval.'],ops:['YPF en zona de soporte técnico con petróleo en recuperación — riesgo/retorno favorable.','Bonos AL30D con spread comprimiendo — atractivos para horizonte 6-12 meses.']},
+    ...retros
+  ];
+  list.innerHTML=all.map(r=>`<div class="retro-card">
+    <div class="retro-hdr">
+      <div><div class="retro-date-txt">${r.date}</div><div class="retro-gen" style="font-size:10px;color:var(--dim)">${r.id===0?'Ejemplo cargado':'Guardado'}</div></div>
+      <span class="retro-badge ${r.sent}">${sentLabel[r.sent]||r.sent}</span>
+    </div>
+    <div class="retro-stitle">📋 Resumen</div>
+    <div class="retro-text">${r.summary}</div>
+    ${r.als&&r.als.length?'<div class="retro-stitle">🚨 Alertas</div>'+r.als.map(a=>`<div class="retro-alert">⚠️ ${a}</div>`).join(''):''}
+    ${r.ops&&r.ops.length?'<div class="retro-stitle">💡 Oportunidades</div>'+r.ops.map(o=>`<div class="retro-opp">💚 ${o}</div>`).join(''):''}
+  </div>`).join('');
 }
 
 // ========= ALERTS =========
-let alerts = JSON.parse(localStorage.getItem('iol-alerts') || '[]');
-let currentPrices = {};
+function addAlert(){
+  const ticker=document.getElementById('as-ticker').value.trim().toUpperCase();
+  const name=document.getElementById('as-name').value.trim();
+  const cond=document.getElementById('as-cond').value;
+  const price=parseFloat(document.getElementById('as-price').value);
+  const notes=document.getElementById('as-notes').value.trim();
+  if(!ticker||isNaN(price)){alert('Completá ticker y precio');return;}
+  alerts.push({id:Date.now(),ticker,name:name||ticker,cond,price,notes,triggered:false});
+  localStorage.setItem('iol-mob-alerts',JSON.stringify(alerts));
+  renderAlerts();closeSheet('alert-sheet');
+}
 
-function addAlert() {
-  const ticker = document.getElementById('alert-ticker').value.trim().toUpperCase();
-  const name = document.getElementById('alert-name').value.trim();
-  const cond = document.getElementById('alert-cond').value;
-  const price = parseFloat(document.getElementById('alert-price').value);
-  const notes = document.getElementById('alert-notes').value.trim();
+function renderAlerts(){
+  const list=document.getElementById('alerts-list');
+  const empty=document.getElementById('alerts-empty');
+  const dot=document.getElementById('alert-dot');
+  if(alerts.length===0){empty.style.display='block';list.innerHTML='';dot.style.display='none';
+    document.getElementById('price-check-list').innerHTML='<span style="font-size:12px;color:var(--dim)">Sin alertas.</span>';return;}
+  empty.style.display='none';
+  const triggered=alerts.filter(a=>a.triggered).length;
+  dot.style.display=triggered>0?'block':'none';
+  list.innerHTML=alerts.map(a=>`<div class="alert-card ${a.triggered?'triggered':''}">
+    <div class="alert-badge">${a.ticker}</div>
+    <div class="alert-info">
+      <div class="alert-name">${a.name} ${a.triggered?'<span style="color:var(--green);font-size:11px">✓ DISPARADA</span>':''}</div>
+      <div class="alert-cond">${a.cond==='above'?'↑ Sube sobre':'↓ Baja de'} ${fmtARSfull(a.price)} ${a.notes?'· '+a.notes:''}</div>
+    </div>
+    <div>
+      <div class="alert-price-txt">${fmtARS(a.price)}</div>
+      <button class="btn-sm" onclick="removeAlert(${a.id})" style="margin-top:6px">✕</button>
+    </div>
+  </div>`).join('');
 
-  if (!ticker || isNaN(price)) { alert('Completá ticker y precio.'); return; }
+  const tickers=[...new Set(alerts.map(a=>a.ticker))];
+  document.getElementById('price-check-list').innerHTML=tickers.map(t=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <span style="background:#0f3460;color:var(--blue);font-size:12px;font-weight:700;padding:5px 10px;border-radius:7px;min-width:64px;text-align:center">${t}</span>
+    <input class="form-input" type="number" id="cp-${t}" placeholder="Precio actual" style="flex:1">
+  </div>`).join('');
+}
 
-  alerts.push({ id: Date.now(), ticker, name: name || ticker, cond, price, notes, triggered: false });
-  localStorage.setItem('iol-alerts', JSON.stringify(alerts));
+function removeAlert(id){alerts=alerts.filter(a=>a.id!==id);localStorage.setItem('iol-mob-alerts',JSON.stringify(alerts));renderAlerts();}
+
+function checkAlerts(){
+  const tickers=[...new Set(alerts.map(a=>a.ticker))];
+  const prices={};
+  tickers.forEach(t=>{const el=document.getElementById('cp-'+t);if(el&&el.value)prices[t]=parseFloat(el.value);});
+  alerts=alerts.map(a=>{const c=prices[a.ticker];if(c!==undefined)a.triggered=a.cond==='above'?c>=a.price:c<=a.price;return a;});
+  localStorage.setItem('iol-mob-alerts',JSON.stringify(alerts));
   renderAlerts();
-  closeModal('add-alert-modal');
-  ['alert-ticker','alert-name','alert-price','alert-notes'].forEach(id => document.getElementById(id).value = '');
-}
-
-function removeAlert(id) {
-  alerts = alerts.filter(a => a.id !== id);
-  localStorage.setItem('iol-alerts', JSON.stringify(alerts));
-  renderAlerts();
-}
-
-function renderAlerts() {
-  const list = document.getElementById('alerts-list');
-  const empty = document.getElementById('alerts-empty');
-  const priceList = document.getElementById('price-update-list');
-
-  if (alerts.length === 0) {
-    empty.style.display = 'block';
-    list.innerHTML = '';
-    priceList.innerHTML = '<span style="font-size:12px;color:var(--text-dim)">No hay alertas configuradas.</span>';
-    document.getElementById('alert-count').style.display = 'none';
-    return;
-  }
-
-  empty.style.display = 'none';
-  const triggered = alerts.filter(a => a.triggered).length;
-  const alertCount = document.getElementById('alert-count');
-  if (triggered > 0) { alertCount.style.display = 'inline'; alertCount.textContent = triggered; }
-  else alertCount.style.display = 'none';
-
-  list.innerHTML = alerts.map(a => {
-    const condText = a.cond === 'above' ? '↑ Sube sobre' : '↓ Baja de';
-    return `<div class="alert-item ${a.triggered ? 'alert-triggered' : ''}">
-      <div class="alert-ticker-badge">${a.ticker}</div>
-      <div class="alert-info">
-        <div class="alert-name">${a.name} ${a.triggered ? '<span style="color:var(--green);font-size:11px;">✓ DISPARADA</span>' : ''}</div>
-        <div class="alert-cond">${condText} ${fmtARS(a.price)} ${a.notes ? '· ' + a.notes : ''}</div>
-      </div>
-      <div class="alert-price">${fmtARS(a.price)}</div>
-      <button class="btn-red" onclick="removeAlert(${a.id})">✕</button>
-    </div>`;
-  }).join('');
-
-  priceList.innerHTML = [...new Set(alerts.map(a => a.ticker))].map(t => `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <span class="ticker-badge" style="min-width:70px;text-align:center;">${t}</span>
-      <input type="number" placeholder="Precio actual" id="price-${t}" step="0.01" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-size:13px;outline:none;width:160px;">
-    </div>`).join('');
-}
-
-function checkAllAlerts() {
-  const tickers = [...new Set(alerts.map(a => a.ticker))];
-  tickers.forEach(t => {
-    const el = document.getElementById('price-' + t);
-    if (el && el.value) currentPrices[t] = parseFloat(el.value);
-  });
-
-  alerts = alerts.map(a => {
-    const cur = currentPrices[a.ticker];
-    if (cur !== undefined) {
-      a.triggered = a.cond === 'above' ? cur >= a.price : cur <= a.price;
-    }
-    return a;
-  });
-
-  localStorage.setItem('iol-alerts', JSON.stringify(alerts));
-  renderAlerts();
-
-  const triggered = alerts.filter(a => a.triggered).length;
-  if (triggered > 0) alert(`¡${triggered} alerta${triggered > 1 ? 's' : ''} disparada${triggered > 1 ? 's' : ''}! Revisalas en la lista.`);
-  else alert('Ninguna alerta disparada con los precios actuales.');
-}
-
-// ========= MARKET DATA =========
-async function fetchMarketData() {
-  try {
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true');
-    if (res.ok) {
-      const d = await res.json();
-      if (d.bitcoin) {
-        document.getElementById('btc-val').textContent = '$' + fmtNum(Math.round(d.bitcoin.usd));
-        const chg = d.bitcoin.usd_24h_change || 0;
-        document.getElementById('btc-chg').textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
-        document.getElementById('btc-chg').className = 'ticker-chg ' + (chg >= 0 ? 'up' : 'down');
-      }
-    }
-  } catch(e) {}
-
-  // Simulated data for other tickers (in a real setup, use a financial API)
-  const simulate = (base, volatility) => {
-    const chg = (Math.random() - 0.45) * volatility;
-    return { val: base * (1 + chg/100), chg };
-  };
-
-  const data = {
-    spx: simulate(5280, 0.8), ndx: simulate(18900, 1.1),
-    merval: simulate(2850000, 1.5), ccl: simulate(1285, 0.3),
-    blue: simulate(1270, 0.5), gold: simulate(2950, 0.6), wti: simulate(74.5, 1.2)
-  };
-
-  const fmt = (id, val, chg, prefix='$', dec=0) => {
-    document.getElementById(id + '-val').textContent = prefix + fmtNum(dec === 0 ? Math.round(val) : val.toFixed(dec));
-    const el = document.getElementById(id + '-chg');
-    el.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
-    el.className = 'ticker-chg ' + (chg >= 0 ? 'up' : 'down');
-  };
-
-  fmt('spx', data.spx.val, data.spx.chg);
-  fmt('ndx', data.ndx.val, data.ndx.chg);
-  fmt('merval', data.merval.val, data.merval.chg);
-  fmt('ccl', data.ccl.val, data.ccl.chg);
-  fmt('blue', data.blue.val, data.blue.chg);
-  fmt('gold', data.gold.val, data.gold.chg, '$', 2);
-  fmt('wti', data.wti.val, data.wti.chg, '$', 2);
-}
-
-// ========= UTILS =========
-function fmtARS(n) {
-  if (isNaN(n)) return '$0,00';
-  return '$' + Math.abs(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtNum(n) { return n.toLocaleString('es-AR'); }
-
-// ========= IOL DATA — cargada el 01/06/2026 =========
-// Precios de compra estimados = precios actuales de IOL al 01/06/2026
-// Actualizá precioCompra con tus precios reales de entrada para ver P&L correcto
-const iolData = [
-  { id:1, ticker:'YPFD',  name:'YPF',                          tipo:'Acción',  cantidad:20,    precioCompra:81500, precioActual:81500,  varDia:4.02  },
-  { id:2, ticker:'NVDA',  name:'CEDEAR Nvidia Corporation',     tipo:'CEDEAR',  cantidad:79,    precioCompra:13960, precioActual:13960,  varDia:5.35  },
-  { id:3, ticker:'MSFT',  name:'CEDEAR Microsoft Corp.',        tipo:'CEDEAR',  cantidad:24,    precioCompra:22940, precioActual:22940,  varDia:3.66  },
-  { id:4, ticker:'AAPL',  name:'CEDEAR Apple Inc.',             tipo:'CEDEAR',  cantidad:23,    precioCompra:22950, precioActual:22950,  varDia:-0.86 },
-  { id:5, ticker:'AMZN',  name:'CEDEAR Amazon.com Inc.',        tipo:'CEDEAR',  cantidad:129,   precioCompra:2705,  precioActual:2705,   varDia:-2.95 },
-  { id:6, ticker:'PAMP',  name:'Pampa Energía',                 tipo:'Acción',  cantidad:61,    precioCompra:5245,  precioActual:5245,   varDia:3.24  },
-  { id:7, ticker:'META',  name:'CEDEAR Meta Platforms',         tipo:'CEDEAR',  cantidad:6,     precioCompra:37400, precioActual:37400,  varDia:-4.44 },
-  { id:8, ticker:'MELI',  name:'CEDEAR MercadoLibre Inc.',      tipo:'CEDEAR',  cantidad:10,    precioCompra:21530, precioActual:21530,  varDia:2.86  },
-  { id:9, ticker:'SPHQ',  name:'CEDEAR S&P 500 Quality ETF',   tipo:'CEDEAR',  cantidad:23,    precioCompra:9045,  precioActual:9045,   varDia:0.16  },
-  { id:10,ticker:'MCD',   name:'CEDEAR McDonald\'s Corp.',      tipo:'CEDEAR',  cantidad:12,    precioCompra:17210, precioActual:17210,  varDia:-0.63 },
-  { id:11,ticker:'SHOP',  name:'CEDEAR Shopify Inc.',           tipo:'CEDEAR',  cantidad:111,   precioCompra:1714,  precioActual:1714,   varDia:4.70  },
-  { id:12,ticker:'V',     name:'CEDEAR Visa Inc.',              tipo:'CEDEAR',  cantidad:7,     precioCompra:26740, precioActual:26740,  varDia:-1.47 },
-  { id:13,ticker:'B',     name:'CEDEAR Barrick Mining Corp.',   tipo:'CEDEAR',  cantidad:4,     precioCompra:31600, precioActual:31600,  varDia:0.00  },
-  { id:14,ticker:'BABA',  name:'CEDEAR Alibaba Group',          tipo:'CEDEAR',  cantidad:6,     precioCompra:20840, precioActual:20840,  varDia:1.46  },
-  { id:15,ticker:'PAAS',  name:'CEDEAR Pan American Silver',    tipo:'CEDEAR',  cantidad:4,     precioCompra:27580, precioActual:27580,  varDia:-2.05 },
-  { id:16,ticker:'HMY',   name:'CEDEAR Harmony Gold Mining',    tipo:'CEDEAR',  cantidad:4,     precioCompra:26320, precioActual:26320,  varDia:-2.94 },
-  { id:17,ticker:'BIDU',  name:'CEDEAR Baidu Inc.',             tipo:'CEDEAR',  cantidad:4,     precioCompra:17890, precioActual:17890,  varDia:-2.07 },
-  { id:18,ticker:'NIO',   name:'CEDEAR NIO Inc.',               tipo:'CEDEAR',  cantidad:18,    precioCompra:2218,  precioActual:2218,   varDia:6.89  },
-  { id:19,ticker:'JD',    name:'CEDEAR JD.com Inc.',            tipo:'CEDEAR',  cantidad:2,     precioCompra:10850, precioActual:10850,  varDia:1.40  },
-  { id:20,ticker:'IOLCAMA',name:'FCI IOL Cash Management',      tipo:'FCI',     cantidad:192186,precioCompra:11.41, precioActual:11.41,  varDia:0.06  },
-  { id:21,ticker:'IOLDOLD',name:'FCI IOL Dólar Ahorro Plus',    tipo:'FCI',     cantidad:22,    precioCompra:1.08,  precioActual:1.08,   varDia:0.05  },
-];
-
-// Si no hay cartera guardada en localStorage, cargamos la de IOL
-if (!localStorage.getItem('iol-portfolio') || JSON.parse(localStorage.getItem('iol-portfolio')).length === 0) {
-  portfolio = iolData;
-  savePortfolio();
+  const n=alerts.filter(a=>a.triggered).length;
+  alert(n>0?`¡${n} alerta${n>1?'s':''} disparada${n>1?'s':''}!`:'Ninguna alerta disparada.');
 }
 
 // ========= INIT =========
+document.getElementById('rs-date').value=new Date().toISOString().split('T')[0];
+document.getElementById('ps-ticker').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
+document.getElementById('as-ticker').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
 renderPortfolio();
 renderRetros();
-fetchMarketData();
-setInterval(fetchMarketData, 60000);
-
-// Set retro date input default
-const today = new Date().toISOString().split('T')[0];
-if (document.getElementById('retro-date-input')) document.getElementById('retro-date-input').value = today;
-
-// Make ticker inputs uppercase
-document.getElementById('pos-ticker').addEventListener('input', e => e.target.value = e.target.value.toUpperCase());
-document.getElementById('alert-ticker').addEventListener('input', e => e.target.value = e.target.value.toUpperCase());
-
 </script>
 </body>
 </html>
